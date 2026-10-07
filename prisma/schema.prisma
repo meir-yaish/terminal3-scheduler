@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Project {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime    @default(now())
+  paidPercent Float       @default(0)
+  expensesPaidPercent Float @default(0)
+  tasks       Task[]
+  milestones  Milestone[]
+  recipients  Recipient[]
+  baselines   Baseline[]
+}
+
+model Baseline {
+  id        String         @id @default(cuid())
+  projectId String
+  project   Project        @relation(fields: [projectId], references: [id])
+  name      String
+  createdAt DateTime       @default(now())
+  createdBy String?
+  tasks     BaselineTask[]
+}
+
+model BaselineTask {
+  id         String   @id @default(cuid())
+  baselineId String
+  baseline   Baseline @relation(fields: [baselineId], references: [id], onDelete: Cascade)
+  taskId     String
+  name       String
+  phase      String
+  startDate  DateTime
+  endDate    DateTime
+  progress   Int
+}
+
+model Task {
+  id             String    @id @default(cuid())
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id])
+  name           String
+  phase          String
+  responsible    String
+  startDate      DateTime
+  endDate        DateTime
+  progress       Int       @default(0)
+  dependencies   String    @default("[]")
+  notes          String?
+  color          String    @default("#4472C4")
+  order          Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  stage          String?
+  subStage       String?
+  building       String?
+  facade         String?
+  floors         String?
+  scaffoldingNum String?
+  cost           Float?
+  revenue        Float?
+  quantity       Float?
+  costLogistics    Float?
+  costInstallation Float?
+  costManagement   Float?
+  quotedPrice      Float?
+  costBreakdown    String?
+  wbsStage         String?
+  sdPhase          String?
+  customImage       String?
+  customImageRegion String?
+  changes        TaskChange[]
+  procurementItems ProcurementItem[]
+}
+
+model FacadeRegion {
+  id        String   @id @default(cuid())
+  key       String   // e.g. "A|מזרח" (building|facade), matches FACADE_IMAGES key
+  code      String   // sub-stage code, e.g. "5,1" (matches Task.subStage)
+  xPct      Float
+  yPct      Float
+  wPct      Float
+  hPct      Float
+  updatedAt DateTime @updatedAt
+
+  @@unique([key, code])
+}
+
+model ProcurementItem {
+  id           String    @id @default(cuid())
+  taskId       String
+  task         Task      @relation(fields: [taskId], references: [id])
+  projectId    String
+  name         String
+  sku          String?
+  quantity     Float?
+  unit         String?
+  neededByDate DateTime?
+  notes        String?
+  status       String    @default("ממתין")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Milestone {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  name      String
+  date      DateTime
+  status    String   @default("green")
+  notes     String?
+}
+
+model Recipient {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  name      String
+  email     String
+  phone     String?
+  active    Boolean @default(true)
+}
+
+model TaskChange {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  field     String
+  oldValue  String?
+  newValue  String?
+  changedBy String?
+  changedAt DateTime @default(now())
+}
+
+model Settings {
+  id              String @id @default("singleton")
+  emailFrom       String @default("")
+  emailPassword   String @default("")
+  weeklyReportDay Int    @default(0)
+  weeklyReportTime String @default("08:00")
+}

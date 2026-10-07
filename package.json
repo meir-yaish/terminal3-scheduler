@@ -1,0 +1,46 @@
+{
+  "name": "terminal3-scheduler",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@types/nodemailer": "^8.0.0",
+    "@types/pg": "^8.20.0",
+    "better-sqlite3": "^12.10.0",
+    "date-fns": "^4.2.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "next": "16.2.6",
+    "nodemailer": "^8.0.7",
+    "pg": "^8.21.0",
+    "prisma": "^7.8.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "20.19.43",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.10.0": true,
+    "better-sqlite3@12.11.1": true,
+    "core-js@3.50.0": true,
+    "prisma@7.10.0": true,
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true
+  }
+}
