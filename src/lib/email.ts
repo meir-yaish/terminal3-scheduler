@@ -1,15 +1,19 @@
 import nodemailer from 'nodemailer'
 
 export async function sendEmail({
-  from, password, to, subject, html, attachments
+  to, subject, html, attachments
 }: {
-  from: string
-  password: string
   to: string[]
   subject: string
   html: string
-  attachments?: any[]
+  attachments?: { filename: string; content: Buffer | string }[]
 }) {
+  const from = process.env.GMAIL_FROM
+  const password = process.env.GMAIL_APP_PASSWORD
+  if (!from || !password) {
+    throw new Error('חסרים משתני סביבה GMAIL_FROM / GMAIL_APP_PASSWORD')
+  }
+
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,

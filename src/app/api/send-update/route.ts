@@ -6,9 +6,8 @@ export async function POST(req: NextRequest) {
   try {
     const { projectId, changes } = await req.json()
 
-    const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } })
-    if (!settings?.emailFrom || !settings?.emailPassword) {
-      return NextResponse.json({ error: 'הגדרות מייל חסרות' }, { status: 400 })
+    if (!process.env.GMAIL_FROM || !process.env.GMAIL_APP_PASSWORD) {
+      return NextResponse.json({ error: 'הגדרות מייל חסרות (GMAIL_FROM / GMAIL_APP_PASSWORD)' }, { status: 400 })
     }
 
     const project = await prisma.project.findUnique({ where: { id: projectId } })
@@ -74,8 +73,6 @@ export async function POST(req: NextRequest) {
 </body></html>`
 
     await sendEmail({
-      from: settings.emailFrom,
-      password: settings.emailPassword,
       to: recipients.map(r => r.email),
       subject: `עדכון לוח זמנים - ${project?.name} - ${dateStr}`,
       html

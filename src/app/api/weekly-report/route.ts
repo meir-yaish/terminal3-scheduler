@@ -15,8 +15,7 @@ export async function GET(req: NextRequest) {
     })
 
     for (const project of projects) {
-      const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } })
-      if (!settings?.emailFrom || !settings?.emailPassword) continue
+      if (!process.env.GMAIL_FROM || !process.env.GMAIL_APP_PASSWORD) continue
 
       const tasks = await prisma.task.findMany({ where: { projectId: project.id }, orderBy: { order: 'asc' } })
       const milestones = project.milestones.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -55,8 +54,6 @@ export async function GET(req: NextRequest) {
 </body></html>`
 
       await sendEmail({
-        from: settings.emailFrom,
-        password: settings.emailPassword,
         to: recipients.map(r => r.email),
         subject: `📊 דוח שבועי - ${project.name} - ${dateStr}`,
         html

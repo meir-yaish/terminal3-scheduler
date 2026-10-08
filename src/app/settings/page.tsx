@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 interface Recipient { id: string; name: string; email: string; phone: string | null; active: boolean }
-interface Settings { emailFrom: string; emailPassword: string; weeklyReportDay: number; weeklyReportTime: string }
+interface Settings { emailFrom: string; weeklyReportDay: number; weeklyReportTime: string }
 interface Baseline { id: string; name: string; createdAt: string; createdBy: string | null; _count: { tasks: number } }
 
 const DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<Settings>({ emailFrom: '', emailPassword: '', weeklyReportDay: 0, weeklyReportTime: '08:00' })
+  const [settings, setSettings] = useState<Settings>({ emailFrom: '', weeklyReportDay: 0, weeklyReportTime: '08:00' })
   const [recipients, setRecipients] = useState<Recipient[]>([])
   const [projectId, setProjectId] = useState<string | null>(null)
   const [newName, setNewName] = useState('')
@@ -110,12 +110,8 @@ export default function SettingsPage() {
                 placeholder="terminalsenter3@gmail.com" value={settings.emailFrom}
                 onChange={e => setSettings({...settings, emailFrom: e.target.value})} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">סיסמה</label>
-              <input type="password" className="w-full border rounded-lg px-3 py-2" dir="ltr"
-                placeholder="••••••••" value={settings.emailPassword}
-                onChange={e => setSettings({...settings, emailPassword: e.target.value})} />
-              <p className="text-xs text-gray-500 mt-1">⚠️ השתמש ב-App Password של Gmail (לא הסיסמה הרגילה)</p>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">🔒 סיסמת Gmail (App Password) מוגדרת כמשתנה סביבה GMAIL_APP_PASSWORD ב-Vercel</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

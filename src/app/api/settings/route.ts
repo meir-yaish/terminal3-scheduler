@@ -7,7 +7,8 @@ export async function GET() {
     create: { id: 'singleton' },
     update: {}
   })
-  return NextResponse.json(settings)
+  const { emailPassword: _omit, ...safe } = settings
+  return NextResponse.json(safe)
 }
 
 export async function PUT(req: NextRequest) {
