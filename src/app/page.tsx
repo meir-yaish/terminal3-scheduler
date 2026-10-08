@@ -132,12 +132,6 @@ export default function Home() {
     setLoading(false)
   }
 
-  async function initProject() {
-    const res = await fetch('/api/seed', { method: 'POST' })
-    const data = await res.json()
-    return data.project?.id
-  }
-
   async function loadData(pid: string) {
     const [tasksRes, milestonesRes, procurementRes] = await Promise.all([
       fetch(`/api/tasks?projectId=${pid}`),
@@ -166,9 +160,6 @@ export default function Home() {
     }
   }, [])
 
-  useEffect(() => {
-    fetch('/api/projects').then(r => r.json()).then(setProjects).catch(() => {})
-  }, [])
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -184,27 +175,25 @@ export default function Home() {
   useEffect(() => {
     async function init() {
       try {
+        const projectsRes = await fetch('/api/projects')
+        const allProjects: { id: string; name: string }[] = await projectsRes.json()
+        setProjects(allProjects)
+
+        if (allProjects.length === 0) {
+          setLoading(false)
+          return
+        }
+
         let pid = localStorage.getItem('projectId')
-        let needsReinit = !pid
-        if (pid) {
-          const r = await fetch(`/api/tasks?projectId=${pid}`)
-          if (!r.ok) {
-            needsReinit = true
-          } else {
-            const data = await r.json()
-            if (!Array.isArray(data) || data.length === 0) {
-              needsReinit = true
-            }
-          }
+        const pidValid = pid && allProjects.some(p => p.id === pid)
+
+        if (!pidValid) {
+          pid = allProjects[0].id
+          localStorage.setItem('projectId', pid)
         }
-        if (needsReinit) {
-          pid = await initProject()
-          if (pid) localStorage.setItem('projectId', pid)
-        }
-        if (pid) {
-          setProjectId(pid)
-          await loadData(pid)
-        }
+
+        setProjectId(pid!)
+        await loadData(pid!)
       } finally {
         setLoading(false)
       }
