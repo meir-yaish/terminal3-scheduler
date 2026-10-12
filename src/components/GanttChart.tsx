@@ -726,47 +726,6 @@ export default function GanttChart({ tasks, onTaskUpdate, onTaskDelete, taskSeri
               {isBlocked && (
                 <text x={x - 16} y={y + ROW_HEIGHT / 2 + 4} fontSize={12}>🔒<title>{`חסום — מחכה ל: ${incompletePreds.map(p => p.name).join(', ')}`}</title></text>
               )}
-              {/* שלד — 10 קומות שוות */}
-              {task.phase === 'שלד' && (() => {
-                const FLOORS = 10
-                const sd = new Date(task.startDate)
-                const ed = new Date(task.endDate)
-                const totalMs = ed.getTime() - sd.getTime()
-                const today = new Date()
-                return Array.from({ length: FLOORS }, (_, fi) => {
-                  const floorStart = new Date(sd.getTime() + (fi / FLOORS) * totalMs)
-                  const floorEnd   = new Date(sd.getTime() + ((fi + 1) / FLOORS) * totalMs)
-                  const fx  = dateToX(floorStart)
-                  const fex = dateToX(floorEnd)
-                  const segW = fex - fx
-                  const isCurrent = today >= floorStart && today < floorEnd
-                  const isInstallStart = fi === 5
-                  return (
-                    <g key={`skel-f-${fi}`} pointerEvents="none">
-                      {fi > 0 && (
-                        <line x1={fx} y1={y + 8} x2={fx} y2={y + ROW_HEIGHT - 8}
-                          stroke="rgba(255,255,255,0.75)" strokeWidth={isInstallStart ? 2 : 1} />
-                      )}
-                      {isCurrent && (
-                        <rect x={fx} y={y + 8} width={segW} height={ROW_HEIGHT - 16}
-                          fill="rgba(255,220,0,0.25)" rx={2} />
-                      )}
-                      <text x={fx + segW / 2} y={y + ROW_HEIGHT / 2 + 4}
-                        textAnchor="middle" fill="rgba(255,255,255,0.95)" fontSize={9} fontFamily="Arial" fontWeight="bold">
-                        {`ק׳ ${fi + 1}`}
-                      </text>
-                      {isInstallStart && (
-                        <>
-                          <polygon points={`${fx},${y + ROW_HEIGHT - 6} ${fx - 5},${y + ROW_HEIGHT + 1} ${fx + 5},${y + ROW_HEIGHT + 1}`}
-                            fill="#FFD700" />
-                          <text x={fx} y={y + ROW_HEIGHT + 10} textAnchor="middle"
-                            fill="#FFD700" fontSize={7} fontFamily="Arial" fontWeight="bold">B▶</text>
-                        </>
-                      )}
-                    </g>
-                  )
-                })
-              })()}
               {/* תאריך התחלה — מחוץ לבר משמאל */}
               {(() => {
                 const sd = new Date(task.startDate)
