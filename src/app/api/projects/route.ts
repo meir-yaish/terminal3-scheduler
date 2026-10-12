@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req)
+  if (auth instanceof NextResponse) return auth
+
   const projects = await prisma.project.findMany({
     select: { id: true, name: true, description: true, createdAt: true, paidPercent: true, expensesPaidPercent: true },
     orderBy: { createdAt: 'asc' }
@@ -10,6 +14,9 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  const auth = await requireAuth(req)
+  if (auth instanceof NextResponse) return auth
+
   const { id, paidPercent, expensesPaidPercent } = await req.json()
   if (!id) return NextResponse.json({ error: 'invalid' }, { status: 400 })
   const data: Record<string, number> = {}

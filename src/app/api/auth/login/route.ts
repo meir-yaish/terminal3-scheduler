@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { signToken, COOKIE_NAME } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   const { email, phone } = await req.json()
@@ -16,13 +17,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'אימייל או סיסמה שגויים' }, { status: 401 })
   }
 
-  const secret = process.env.AUTH_SECRET
-  if (!secret) {
-    return NextResponse.json({ error: 'שגיאת שרת' }, { status: 500 })
-  }
+  const jwt = await signToken({ name: recipient.name, email: recipient.email })
 
   const res = NextResponse.json({ ok: true, name: recipient.name })
-  res.cookies.set('auth_token', secret.trim(), {
+  res.cookies.set(COOKIE_NAME, jwt, {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',

@@ -5,10 +5,7 @@ export default function CostAnalysisGate({ children }: { children: React.ReactNo
   const [status, setStatus] = useState<'checking' | 'blocked' | 'ok'>('checking')
 
   useEffect(() => {
-    const name = (localStorage.getItem('userName') || '').trim()
-    if (!name) { setStatus('blocked'); return }
-
-    fetch(`/api/auth/check-finance?name=${encodeURIComponent(name)}`)
+    fetch('/api/auth/check-finance')
       .then(r => r.json())
       .then(data => setStatus(data.allowed ? 'ok' : 'blocked'))
       .catch(() => setStatus('blocked'))

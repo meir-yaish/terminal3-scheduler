@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req)
+  if (auth instanceof NextResponse) return auth
+
   const projectId = req.nextUrl.searchParams.get('projectId')
   const tasks = await prisma.task.findMany({
     where: projectId ? { projectId } : {},
@@ -12,6 +16,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req)
+  if (auth instanceof NextResponse) return auth
+
   const data = await req.json()
   if (data.startDate && typeof data.startDate === 'string') data.startDate = new Date(data.startDate)
   if (data.endDate && typeof data.endDate === 'string') data.endDate = new Date(data.endDate)
